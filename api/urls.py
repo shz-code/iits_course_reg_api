@@ -6,5 +6,6 @@ app_name = "api"
 urlpatterns = [
     path("quizzes", views.getQuizzes),
     path("deadline", views.getDeadline),
-    path("submitQuiz", views.submitQuiz)
+    path("submitQuiz", views.submitQuiz),
+    path("submitForm", views.submitForm)
 ]

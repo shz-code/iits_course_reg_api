@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from quizzes.models import Quiz,DeadLine
+from students.models import Student
 from .serializers import QuizSerializer,DeadlineSerializer
 import random
 from rest_framework import status
@@ -12,7 +13,8 @@ def getQuizzes(request):
     try:
         quizzes = Quiz.objects.all()
         serialize = QuizSerializer(quizzes, many=True)
-        randomQuizzes = random.sample(serialize.data,1)
+        # Choose random quizzes with every request
+        randomQuizzes = random.sample(serialize.data,3)
         return Response(randomQuizzes)
     except:
         return Response("Not Found",status=status.HTTP_404_NOT_FOUND)
@@ -82,3 +84,41 @@ def submitQuiz(request):
 
         # print(rightAns)
         return Response({"totalQuiz": len(serverQuizAns),"rightAns":rightAns,"status":200})
+
+@api_view(['POST'])
+def submitForm(request):
+    if request.method == "POST":
+        res = request.data
+        name = res['name']
+        email = res['email']
+        studentId = res['studentId']
+        phone = res['phone']
+        phone = phone[-11:]
+        reason = res['reason']
+        rightAns = res['rightAns']
+        totalQuiz = res['totalQuiz']
+        try:
+            Student.objects.get(studentId = studentId)
+            return Response({"msg":"studentId_copy","status":403})
+        except:
+            pass
+        try:
+            Student.objects.get(phone = phone)
+            return Response({"msg":"phone_copy","status":403})
+        except:
+            pass
+        try:
+            Student.objects.get(email = email)
+            return Response({"msg":"email_copy","status":403})
+        except:
+            pass
+        Student.objects.create(
+            name = name,
+            email = email,
+            studentId = studentId,
+            phone = phone,
+            reason = reason,
+            rightAns = rightAns,
+            totalQuiz = totalQuiz
+        )
+    return Response({"status":200})
