@@ -6,6 +6,7 @@ from students.models import Student
 from .serializers import QuizSerializer,DeadlineSerializer
 import random
 from rest_framework import status
+from django.http import JsonResponse
 
 # Create your views here.
 @api_view(['GET'])
@@ -15,7 +16,7 @@ def getQuizzes(request):
         serialize = QuizSerializer(quizzes, many=True)
         # Choose random quizzes with every request
         randomQuizzes = random.sample(serialize.data,3)
-        return Response(randomQuizzes)
+        return JsonResponse(randomQuizzes, safe=False,status=status.HTTP_200_OK)
     except:
         return Response("Not Found",status=status.HTTP_404_NOT_FOUND)
 
