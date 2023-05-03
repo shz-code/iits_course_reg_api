@@ -17,7 +17,7 @@ DEBUG = False
 
 ALLOWED_HOSTS =  ["*"]
 
-CSRF_TRUSTED_ORIGINS = ["https://iits.netlify.app"]
+CSRF_TRUSTED_ORIGINS = ["https://iits-reg-api.up.railway.app/"]
 # Application definition
 
 INSTALLED_APPS = [
