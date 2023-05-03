@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.utils.timezone import now
 
 # Create your models here.
 
@@ -11,6 +12,7 @@ class Student(models.Model):
     reason = models.TextField(_("Reason"), null=True,blank=True)
     rightAns = models.IntegerField(_("Right quiz ans"),null=True,blank=True)
     totalQuiz = models.IntegerField(_("Total quizzes"),null=True,blank=True)
+    submission_date = models.DateTimeField(_("Submission Date"),default=now,null=True,blank=True)
 
     def __str__(self):
         return self.name

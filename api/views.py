@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from quizzes.models import Quiz,DeadLine
@@ -6,17 +5,29 @@ from students.models import Student
 from .serializers import QuizSerializer,DeadlineSerializer
 import random
 from rest_framework import status
-from django.http import JsonResponse
+from django.http import  HttpResponse
+from students.admin import StudentsResources
+from django.utils.timezone import now
 
 # Create your views here.
+@api_view(['GET'])
+def index(request):
+    content = {
+        "available endpoints": [
+            "api/quizzes",
+            "api/deadline",
+        ]
+    }
+    return Response(content,status=status.HTTP_200_OK)
+    
 @api_view(['GET'])
 def getQuizzes(request):
     try:
         quizzes = Quiz.objects.all()
         serialize = QuizSerializer(quizzes, many=True)
         # Choose random quizzes with every request
-        randomQuizzes = random.sample(serialize.data,3)
-        return JsonResponse(randomQuizzes, safe=False,status=status.HTTP_200_OK)
+        randomQuizzes = random.sample(serialize.data,10)
+        return Response(randomQuizzes,status=status.HTTP_200_OK)
     except:
         return Response("Not Found",status=status.HTTP_404_NOT_FOUND)
 
@@ -89,6 +100,15 @@ def submitQuiz(request):
 @api_view(['POST'])
 def submitForm(request):
     if request.method == "POST":
+        # Check if deadline is finished or not
+        deadline = DeadLine.objects.last();
+        deadline = int(deadline.deadline.strftime('%Y%m%d%H%M'))
+        submission_time =  now()
+        submission_time = int(submission_time.strftime('%Y%m%d%H%M'))
+
+        if submission_time > deadline:
+            return Response("Failed",status=status.HTTP_406_NOT_ACCEPTABLE)
+
         res = request.data
         name = res['name']
         email = res['email']
@@ -123,3 +143,13 @@ def submitForm(request):
             totalQuiz = totalQuiz
         )
     return Response({"status":200})
+
+@api_view(['GET'])
+def download(request):
+    students = Student.objects.all()
+    dataset = StudentsResources().export(students)
+    dataset = dataset.xls
+
+    response = HttpResponse(dataset,content_type="xls")
+    response["Content-Disposition"] = f"attachment; filename=student_list.xls"
+    return response

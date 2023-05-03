@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env("SECRET_KEY", default="unsafe-secret-key")
-DEBUG = False    
+DEBUG = True    
 
 ALLOWED_HOSTS =  ["*"]
 
@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'api',
     'quizzes',
     'students',
+    'import_export',
     'rest_framework',
     'corsheaders',
 ]
